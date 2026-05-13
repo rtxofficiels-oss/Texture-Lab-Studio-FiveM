@@ -8,17 +8,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:       #0b0c0e;
-    --bg2:      #111316;
-    --bg3:      #16181d;
-    --line:     rgba(255,255,255,0.07);
-    --line2:    rgba(255,255,255,0.13);
-    --text:     #e8e6e1;
-    --muted:    #6b6e78;
-    --accent:   #c8a96e;
-    --accent2:  #8a7046;
-    --white:    #f5f3ef;
-    --radius:   4px;
+    --bg:        #0b0c0e;
+    --bg2:       #111316;
+    --bg3:       #16181d;
+    --line:      rgba(255,255,255,0.07);
+    --line2:     rgba(255,255,255,0.13);
+    --text:      #e8e6e1;
+    --muted:     #6b6e78;
+    --accent:    #c8a96e;
+    --accent2:   #8a7046;
+    --white:     #f5f3ef;
+    --radius:    4px;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -878,79 +878,69 @@
         </div>
       </div>
     </div>
-
-    <div style="text-align:center; margin-top:48px;">
-      <a href="#contact" class="btn-ghost" style="display:inline-flex;">Voir plus de réalisations</a>
-    </div>
   </div>
 </section>
 
 <!-- PRICING -->
 <section id="pricing">
   <div class="container">
-    <div class="pricing-header reveal">
-      <div class="label" style="justify-content:center;">Transparence tarifaire</div>
-      <h2>Nos tarifs</h2>
-      <p>Des formules claires et sans surprise. Tarifs en euros, paiement sécurisé.</p>
+    <div class="pricing-header">
+      <div class="label reveal" style="justify-content: center;">Tarification</div>
+      <h2 class="reveal reveal-delay-1">Des offres adaptées à vos besoins</h2>
+      <p class="reveal reveal-delay-2">Qualité premium, délais respectés et support technique inclus.</p>
     </div>
 
-    <div class="pricing-grid reveal">
-
-      <div class="pricing-card">
-        <div class="pricing-name">Essentiel</div>
-        <div class="pricing-price">15<span>€</span></div>
-        <div class="pricing-sub">Par réalisation simple</div>
+    <div class="pricing-grid">
+      <div class="pricing-card reveal">
+        <div class="pricing-name">Basique</div>
+        <div class="pricing-price">15€ <span>/ asset</span></div>
+        <div class="pricing-sub">Idéal pour une modification simple</div>
         <div class="pricing-divider"></div>
         <ul class="pricing-features">
-          <li>Modification de texture unique</li>
-          <li>Résolution jusqu'à 1024×1024</li>
+          <li>1 modification de texture</li>
+          <li>Résolution jusqu'à 2K</li>
+          <li>Optimisation FiveM</li>
           <li>1 révision incluse</li>
-          <li>Livraison en 48h</li>
-          <li class="off">Livrée véhicule complète</li>
-          <li class="off">Handling personnalisé</li>
-          <li class="off">Support prioritaire</li>
+          <li class="off">Pas de modélisation 3D</li>
+          <li class="off">Pas de support prioritaire</li>
         </ul>
         <a href="#contact" class="pricing-cta">Commander</a>
       </div>
 
-      <div class="pricing-card featured-price">
-        <div class="pricing-badge">Le plus demandé</div>
-        <div class="pricing-name">Studio</div>
-        <div class="pricing-price">45<span>€</span></div>
-        <div class="pricing-sub">Projet complet clé-en-main</div>
+      <div class="pricing-card featured-price reveal reveal-delay-1">
+        <div class="pricing-badge">Populaire</div>
+        <div class="pricing-name">Standard</div>
+        <div class="pricing-price">45€ <span>/ projet</span></div>
+        <div class="pricing-sub">Parfait pour une livrée complète</div>
         <div class="pricing-divider"></div>
         <ul class="pricing-features">
-          <li>Pack textures complet</li>
-          <li>Résolution jusqu'à 4096×4096</li>
+          <li>Livrée véhicule sur-mesure</li>
+          <li>Résolution 4K ultra-détaillée</li>
+          <li>Fichiers .ytd optimisés</li>
           <li>3 révisions incluses</li>
-          <li>Livrée véhicule incluse</li>
-          <li>Handling personnalisé</li>
-          <li>Livraison en 24h</li>
-          <li class="off">Support prioritaire</li>
+          <li>Paramétrage handling de base</li>
+          <li class="off">Pas de modèle 3D complexe</li>
         </ul>
         <a href="#contact" class="pricing-cta">Commander</a>
       </div>
 
-      <div class="pricing-card">
-        <div class="pricing-name">Serveur</div>
-        <div class="pricing-price">Sur<span> devis</span></div>
-        <div class="pricing-sub">Pour projets complexes / récurrents</div>
+      <div class="pricing-card reveal reveal-delay-2">
+        <div class="pricing-name">Premium</div>
+        <div class="pricing-price">Sur Devis</div>
+        <div class="pricing-sub">Projets complexes & modélisation</div>
         <div class="pricing-divider"></div>
         <ul class="pricing-features">
-          <li>Tout du plan Studio</li>
-          <li>Volume illimité d'assets</li>
+          <li>Modélisation 3D complète</li>
+          <li>Pack de textures complet</li>
+          <li>Handling réaliste avancé</li>
           <li>Révisions illimitées</li>
-          <li>Modélisation 3D incluse</li>
-          <li>Support prioritaire dédié</li>
-          <li>Tarif mensuel négocié</li>
-          <li>Accès anticipé aux nouveautés</li>
+          <li>Support installation inclus</li>
+          <li>Livraison ultra-rapide</li>
         </ul>
-        <a href="#contact" class="pricing-cta">Nous contacter</a>
+        <a href="#contact" class="pricing-cta">Me contacter</a>
       </div>
-
     </div>
-
-    <p class="pricing-note reveal">Des besoins spécifiques ? <a href="#contact">Décrivez votre projet</a> pour un devis sur-mesure.</p>
+    <p class="pricing-note reveal reveal-delay-3">Vous avez un besoin spécifique ? <a href="#contact">Demandez un devis personnalisé</a>.</p>
   </div>
 </section>
 
@@ -958,143 +948,188 @@
 <section id="contact">
   <div class="container">
     <div class="contact-grid">
-      <div class="contact-info reveal">
-        <div class="label">Démarrons ensemble</div>
-        <h2>Parlez-nous<br>de votre projet.</h2>
-        <p>Remplissez le formulaire ou contactez-nous directement. Nous répondons sous 24h ouvrées avec une estimation détaillée.</p>
-        <div class="contact-details">
+      <div class="contact-info">
+        <div class="label reveal">Contact</div>
+        <h2 class="reveal reveal-delay-1">Démarrons votre projet.</h2>
+        <p class="reveal reveal-delay-2">Une idée ? Un besoin technique ? Remplissez le formulaire ou contactez-moi directement via nos réseaux.</p>
+        
+        <div class="contact-details reveal reveal-delay-3">
           <div class="contact-detail">
             <div class="contact-detail-icon">✉</div>
             <div>
               <div class="contact-detail-label">Email</div>
-              <div class="contact-detail-value">texture.lab.studio.fivem@gmail.com</div>
+              <div class="contact-detail-value">contact@texturelab.studio</div>
             </div>
           </div>
           <div class="contact-detail">
-            <div class="contact-detail-icon">◈</div>
+            <div class="contact-detail-icon">💬</div>
             <div>
               <div class="contact-detail-label">Discord</div>
-              <div class="contact-detail-value">rtx_offi</div>
-            </div>
-          </div>
-          <div class="contact-detail">
-            <div class="contact-detail-icon">⟳</div>
-            <div>
-              <div class="contact-detail-label">Délai de réponse</div>
-              <div class="contact-detail-value">Sous 24h ouvrées</div>
+              <div class="contact-detail-value">TextureLab#0001</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="reveal reveal-delay-2">
-        <form class="contact-form" onsubmit="submitForm(event)">
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Prénom</label>
-              <input type="text" class="form-control" placeholder="Jean" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Nom</label>
-              <input type="text" class="form-control" placeholder="Dupont" required />
-            </div>
+      <form class="contact-form reveal" id="discordForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nom complet</label>
+            <input type="text" id="name" class="form-control" placeholder="John Doe" required>
           </div>
           <div class="form-group">
             <label class="form-label">Email</label>
-            <input type="email" class="form-control" placeholder="jean@exemple.fr" required />
+            <input type="email" id="email" class="form-control" placeholder="john@exemple.com" required>
           </div>
+        </div>
+        <div class="form-row">
           <div class="form-group">
             <label class="form-label">Service souhaité</label>
-            <select class="form-control">
-              <option value="">Sélectionnez un service…</option>
+            <select id="service" class="form-control">
               <option>Modification de textures</option>
               <option>Livrée de véhicule</option>
-              <option>Handling de véhicule</option>
+              <option>Handling</option>
               <option>Modélisation 3D</option>
-              <option>Pack assets complet</option>
-              <option>Autre / Sur-mesure</option>
+              <option>Autre</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Description du projet</label>
-            <textarea class="form-control" placeholder="Décrivez votre projet, vos références, vos contraintes…" required></textarea>
+            <label class="form-label">Budget estimé</label>
+            <input type="text" id="budget" class="form-control" placeholder="ex: 50€">
           </div>
-          <button type="submit" class="form-submit">Envoyer la demande →</button>
-          <div class="form-success" id="formSuccess">
-            ✓ Votre demande a bien été envoyée — nous revenons vers vous sous 24h !
-          </div>
-        </form>
-      </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Détails du projet</label>
+          <textarea id="message" class="form-control" placeholder="Décrivez votre besoin précisément..." required></textarea>
+        </div>
+        <button type="submit" class="form-submit" id="submitBtn">Envoyer la demande</button>
+        <div class="form-success" id="successMessage">Votre demande a été envoyée avec succès sur notre Discord !</div>
+      </form>
     </div>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">Texture<span>Lab</span></div>
-  <div class="footer-copy">© 2024 Texture Lab — Tous droits réservés</div>
+  <a href="#hero" class="footer-logo">Texture<span>Lab</span></a>
+  <div class="footer-copy">© 2026 Texture Lab. Tous droits réservés.</div>
   <div class="footer-links">
-    <a href="#services">Services</a>
-    <a href="#portfolio">Portfolio</a>
-    <a href="#contact">Contact</a>
+    <a href="#">Discord</a>
+    <a href="#">Behance</a>
+    <a href="#">Instagram</a>
   </div>
 </footer>
 
 <script>
-  // Cursor
-  const cur = document.getElementById('cursor');
-  document.addEventListener('mousemove', e => {
-    cur.style.left = e.clientX + 'px';
-    cur.style.top  = e.clientY + 'px';
-  });
-  document.querySelectorAll('a, button, .portfolio-item, .service-card, .pricing-card').forEach(el => {
-    el.addEventListener('mouseenter', () => cur.classList.add('expand'));
-    el.addEventListener('mouseleave', () => cur.classList.remove('expand'));
-  });
-
-  // Navbar scroll
-  const nav = document.getElementById('navbar');
+  // Navbar scroll effect
+  const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 40);
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
   });
 
-  // Reveal on scroll
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+
+  // Cursor expansion on interactive elements
+  const interactives = document.querySelectorAll('a, button, .portfolio-item, select, input, textarea');
+  interactives.forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
+  });
 
   // Portfolio filter
-  function filterPortfolio(btn, cat) {
+  function filterPortfolio(btn, category) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    
     document.querySelectorAll('.portfolio-item').forEach(item => {
-      const show = cat === 'all' || item.dataset.cat === cat;
-      item.style.opacity = show ? '1' : '0.2';
-      item.style.pointerEvents = show ? 'auto' : 'none';
-      item.style.transition = 'opacity 0.3s';
+      if (category === 'all' || item.getAttribute('data-cat') === category) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
     });
   }
 
-  // Form submit
-  function submitForm(e) {
-    e.preventDefault();
-    const btn = e.target.querySelector('.form-submit');
-    btn.textContent = 'Envoi…';
-    btn.disabled = true;
-    setTimeout(() => {
-      document.getElementById('formSuccess').style.display = 'block';
-      btn.style.display = 'none';
-    }, 900);
-  }
+  // Scroll reveals
+  const revealElements = document.querySelectorAll('.reveal');
+  const revealOnScroll = () => {
+    revealElements.forEach(el => {
+      const top = el.getBoundingClientRect().top;
+      if (top < window.innerHeight - 100) {
+        el.classList.add('visible');
+      }
+    });
+  };
+  window.addEventListener('scroll', revealOnScroll);
+  window.addEventListener('load', revealOnScroll);
 
-  // Slider range for pricing inputs (init visible)
-  window.addEventListener('load', () => {
-    document.querySelectorAll('.reveal').forEach(el => {
-      const rect = el.getBoundingClientRect();
-      if (rect.top < window.innerHeight) el.classList.add('visible');
+  // ─── DISCORD WEBHOOK LOGIC ───
+  document.getElementById('discordForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('submitBtn');
+    const successMsg = document.getElementById('successMessage');
+    const webhookURL = "https://discord.com/api/webhooks/1504070037068316703/n19bWRwz1_TSDpAlhdqxnSekqhExuR12CLE1mHOnouKgRezHm0cBtyJcTtoOMbRWLpYx";
+
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const service = document.getElementById('service').value;
+    const budget = document.getElementById('budget').value;
+    const message = document.getElementById('message').value;
+
+    btn.innerText = "Envoi en cours...";
+    btn.style.opacity = "0.5";
+    btn.disabled = true;
+
+    const data = {
+      embeds: [{
+        title: "💼 Nouvelle Demande de Projet",
+        color: 13150574,
+        fields: [
+          { name: "👤 Client", value: name, inline: true },
+          { name: "📧 Email", value: email, inline: true },
+          { name: "🛠 Service", value: service, inline: true },
+          { name: "💰 Budget", value: budget || "Non spécisé", inline: true },
+          { name: "📝 Détails", value: message }
+        ],
+        footer: { text: "Texture Lab Website" },
+        timestamp: new Date()
+      }]
+    };
+
+    fetch(webhookURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(response => {
+      if (response.ok) {
+        successMsg.style.display = 'block';
+        document.getElementById('discordForm').reset();
+        btn.innerText = "Envoyé !";
+      } else {
+        alert("Erreur lors de l'envoi.");
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.innerText = "Réessayer";
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      btn.disabled = false;
+      btn.style.opacity = "1";
     });
   });
 </script>
+
 </body>
 </html>
