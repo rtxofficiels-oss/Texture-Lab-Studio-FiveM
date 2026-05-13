@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Texture Lab — Studio de création 3D & Textures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0b0c0e;
+    --bg2:      #111316;
+    --bg3:      #16181d;
+    --line:     rgba(255,255,255,0.07);
+    --line2:    rgba(255,255,255,0.13);
+    --text:     #e8e6e1;
+    --muted:    #6b6e78;
+    --accent:   #c8a96e;
+    --accent2:  #8a7046;
+    --white:    #f5f3ef;
+    --radius:   4px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 400;
+    line-height: 1.65;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  #cursor {
+    position: fixed; top: 0; left: 0; z-index: 9999;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: transform 0.08s, width 0.2s, height 0.2s, opacity 0.2s;
+    mix-blend-mode: difference;
+  }
+  #cursor.expand { width: 40px; height: 40px; opacity: 0.4; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent2); }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 56px;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s, background 0.3s, padding 0.3s;
+  }
+  nav.scrolled {
+    background: rgba(11,12,14,0.9);
+    backdrop-filter: blur(16px);
+    border-color: var(--line);
+    padding: 16px 56px;
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 18px;
+    letter-spacing: 0.12em; color: var(--white);
+    text-transform: uppercase; text-decoration: none;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 40px; }
+  .nav-links a {
+    font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-cta {
+    font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--bg);
+    background: var(--accent); padding: 10px 24px;
+    border-radius: var(--radius); text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .nav-cta:hover { background: var(--white); transform: translateY(-1px); }
+
+  /* ─── SECTIONS ─── */
+  section { padding: 120px 56px; }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  .label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--accent);
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 20px;
+  }
+  .label::before {
+    content: ''; display: block;
+    width: 24px; height: 1px; background: var(--accent);
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 4vw, 56px);
+    font-weight: 700; line-height: 1.1;
+    letter-spacing: -0.02em; color: var(--white);
+  }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 56px 80px;
+    position: relative; overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(200,169,110,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 80% at 10% 80%, rgba(200,169,110,0.03) 0%, transparent 50%);
+  }
+
+  /* Animated grid */
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  /* Big decorative number */
+  .hero-deco {
+    position: absolute; right: 40px; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(200px, 22vw, 340px);
+    font-weight: 800;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(200,169,110,0.1);
+    line-height: 1; user-select: none;
+    letter-spacing: -0.06em;
+    pointer-events: none;
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 820px; }
+
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 28px;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .hero-eyebrow::before {
+    content: ''; display: block;
+    width: 32px; height: 1px; background: var(--accent);
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(52px, 7vw, 104px);
+    font-weight: 800; line-height: 0.95;
+    letter-spacing: -0.04em; color: var(--white);
+    margin-bottom: 32px;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+
+  .hero-desc {
+    font-size: 16px; color: var(--muted);
+    max-width: 480px; line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  .hero-actions { display: flex; gap: 16px; align-items: center; }
+
+  .btn-primary {
+    display: inline-block;
+    background: var(--accent); color: var(--bg);
+    font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; text-decoration: none;
+    padding: 16px 36px; border-radius: var(--radius);
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: var(--white); transform: translateY(-2px); }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 10px;
+    color: var(--muted); font-size: 12px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none; transition: color 0.2s;
+  }
+  .btn-ghost:hover { color: var(--white); }
+  .btn-ghost::after {
+    content: '→'; transition: transform 0.2s;
+  }
+  .btn-ghost:hover::after { transform: translateX(4px); }
+
+  .hero-stats {
+    position: absolute; right: 56px; bottom: 80px; z-index: 1;
+    display: flex; flex-direction: column; gap: 24px; text-align: right;
+  }
+  .hero-stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px; font-weight: 700; color: var(--white);
+    line-height: 1;
+  }
+  .hero-stat-label {
+    font-size: 11px; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ─── MARQUEE ─── */
+  .marquee-wrap {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    overflow: hidden; padding: 18px 0;
+    background: var(--bg2);
+  }
+  .marquee-track {
+    display: flex; gap: 0;
+    animation: marquee 22s linear infinite;
+    white-space: nowrap;
+  }
+  .marquee-item {
+    display: inline-flex; align-items: center; gap: 32px;
+    padding: 0 40px;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .marquee-dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ─── ABOUT ─── */
+  #about { background: var(--bg2); border-top: 1px solid var(--line); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center;
+  }
+  .about-text p {
+    font-size: 15px; color: var(--muted);
+    line-height: 1.8; margin-top: 24px;
+  }
+  .about-text p + p { margin-top: 16px; }
+  .about-visual {
+    position: relative; aspect-ratio: 4/3;
+    border: 1px solid var(--line2); border-radius: 2px;
+    overflow: hidden;
+    background: var(--bg3);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .about-visual-inner {
+    width: 100%; height: 100%;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        transparent, transparent 28px,
+        rgba(200,169,110,0.03) 28px, rgba(200,169,110,0.03) 29px
+      );
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px;
+  }
+  .about-icon {
+    font-size: 56px; opacity: 0.15;
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.05em;
+  }
+  .about-badge {
+    position: absolute; bottom: 20px; right: 20px;
+    background: var(--bg); border: 1px solid var(--line2);
+    padding: 12px 18px; border-radius: var(--radius);
+    font-size: 11px; color: var(--muted); letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .about-badge strong { display: block; color: var(--accent); font-size: 18px; font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 2px; }
+
+  /* ─── SERVICES ─── */
+  #services { border-top: 1px solid var(--line); }
+  .services-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 64px;
+  }
+  .services-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--line);
+  }
+  .service-card {
+    padding: 40px 36px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    position: relative; overflow: hidden;
+    transition: background 0.3s;
+  }
+  .service-card:nth-child(3n) { border-right: none; }
+  .service-card:nth-last-child(-n+3) { border-bottom: none; }
+  .service-card::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: var(--accent);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  .service-card:hover { background: var(--bg2); }
+  .service-card:hover::after { transform: scaleX(1); }
+
+  .service-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.15em; color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .service-icon {
+    font-size: 28px; margin-bottom: 16px;
+    display: block;
+  }
+  .service-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 700; color: var(--white);
+    margin-bottom: 12px; line-height: 1.2;
+  }
+  .service-desc {
+    font-size: 13px; color: var(--muted); line-height: 1.7;
+  }
+  .service-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 20px;
+  }
+  .tag {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent2);
+    border: 1px solid var(--line2);
+    padding: 4px 10px; border-radius: 2px;
+    background: rgba(200,169,110,0.04);
+  }
+
+  /* ─── PORTFOLIO ─── */
+  #portfolio { background: var(--bg2); border-top: 1px solid var(--line); }
+  .portfolio-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 48px;
+  }
+  .portfolio-filter {
+    display: flex; gap: 6px;
+  }
+  .filter-btn {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted);
+    background: none; border: 1px solid var(--line);
+    padding: 8px 16px; cursor: pointer;
+    border-radius: var(--radius);
+    transition: all 0.2s; font-family: inherit;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    color: var(--bg); background: var(--accent); border-color: var(--accent);
+  }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .portfolio-grid .featured {
+    grid-column: span 2; grid-row: span 2;
+  }
+
+  .portfolio-item {
+    position: relative; overflow: hidden;
+    aspect-ratio: 1; background: var(--bg3);
+    cursor: pointer;
+  }
+  .portfolio-item.featured { aspect-ratio: auto; }
+  .portfolio-item-bg {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .portfolio-item:hover .portfolio-item-bg { transform: scale(1.04); }
+
+  .portfolio-overlay {
+    position: absolute; inset: 0;
+    background: rgba(11,12,14,0.75);
+    display: flex; flex-direction: column;
+    justify-content: flex-end; padding: 24px;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .portfolio-item:hover .portfolio-overlay { opacity: 1; }
+  .portfolio-overlay-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 700; color: var(--white);
+    margin-bottom: 4px;
+  }
+  .portfolio-overlay-sub {
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+
+  /* Portfolio visual placeholders */
+  .pv1 { background: linear-gradient(135deg, #1a1208 0%, #2c1f0a 50%, #1a1208 100%); }
+  .pv2 { background: linear-gradient(135deg, #0d1017 0%, #141b26 50%, #0d1017 100%); }
+  .pv3 { background: linear-gradient(135deg, #12100d 0%, #1f1b14 50%, #12100d 100%); }
+  .pv4 { background: linear-gradient(135deg, #0e0f12 0%, #181a20 50%, #0e0f12 100%); }
+  .pv5 { background: linear-gradient(135deg, #110d08 0%, #1c1509 50%, #110d08 100%); }
+
+  .pv-label {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(14px, 2.5vw, 22px);
+    font-weight: 700;
+    color: rgba(200,169,110,0.15);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 16px;
+  }
+
+  /* ─── PRICING ─── */
+  #pricing { border-top: 1px solid var(--line); }
+  .pricing-header { text-align: center; margin-bottom: 64px; }
+  .pricing-header p { font-size: 15px; color: var(--muted); margin-top: 16px; }
+
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2px; border: 1px solid var(--line);
+  }
+  .pricing-card {
+    padding: 44px 36px;
+    border-right: 1px solid var(--line);
+    position: relative; transition: background 0.3s;
+  }
+  .pricing-card:last-child { border-right: none; }
+  .pricing-card.featured-price {
+    background: var(--bg2);
+    border-color: var(--accent2);
+  }
+  .pricing-badge {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--bg);
+    background: var(--accent); padding: 4px 12px;
+    border-radius: 2px; display: inline-block;
+    margin-bottom: 24px;
+  }
+  .pricing-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 700; color: var(--muted);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .pricing-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 48px; font-weight: 800; color: var(--white);
+    line-height: 1; margin-bottom: 6px;
+  }
+  .pricing-price span { font-size: 20px; color: var(--muted); font-weight: 400; }
+  .pricing-sub { font-size: 12px; color: var(--muted); margin-bottom: 32px; }
+  .pricing-divider { height: 1px; background: var(--line); margin-bottom: 28px; }
+  .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .pricing-features li {
+    font-size: 13px; color: var(--muted);
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .pricing-features li::before {
+    content: '✓'; color: var(--accent);
+    font-weight: 600; flex-shrink: 0; margin-top: 1px;
+  }
+  .pricing-features li.off { opacity: 0.35; }
+  .pricing-features li.off::before { content: '×'; color: var(--muted); }
+  .pricing-cta {
+    display: block; margin-top: 36px;
+    text-align: center;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; text-decoration: none;
+    padding: 14px 24px; border-radius: var(--radius);
+    transition: all 0.2s;
+    border: 1px solid var(--line2); color: var(--muted);
+  }
+  .pricing-cta:hover { border-color: var(--accent); color: var(--accent); }
+  .pricing-card.featured-price .pricing-cta {
+    background: var(--accent); color: var(--bg);
+    border-color: var(--accent);
+  }
+  .pricing-card.featured-price .pricing-cta:hover {
+    background: var(--white); border-color: var(--white);
+  }
+
+  .pricing-note {
+    text-align: center; margin-top: 32px;
+    font-size: 13px; color: var(--muted);
+  }
+  .pricing-note a { color: var(--accent); text-decoration: none; }
+
+  /* ─── CONTACT ─── */
+  #contact { background: var(--bg2); border-top: 1px solid var(--line); }
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: flex-start;
+  }
+  .contact-info h2 { margin-bottom: 20px; }
+  .contact-info p { font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 40px; }
+  .contact-details { display: flex; flex-direction: column; gap: 20px; }
+  .contact-detail {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .contact-detail:last-child { border-bottom: none; }
+  .contact-detail-icon {
+    width: 36px; height: 36px; border-radius: var(--radius);
+    border: 1px solid var(--line2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0; color: var(--accent);
+  }
+  .contact-detail-label {
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 2px;
+  }
+  .contact-detail-value {
+    font-size: 14px; color: var(--white); font-weight: 500;
+  }
+
+  .contact-form { display: flex; flex-direction: column; gap: 16px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-label {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .form-control {
+    background: var(--bg3); border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--text); font-family: inherit;
+    font-size: 14px; padding: 14px 16px;
+    outline: none; transition: border-color 0.2s;
+    width: 100%;
+  }
+  .form-control:focus { border-color: var(--accent); }
+  .form-control::placeholder { color: var(--muted); }
+  textarea.form-control { resize: vertical; min-height: 120px; }
+
+  select.form-control { cursor: pointer; }
+  select.form-control option { background: var(--bg3); }
+
+  .form-submit {
+    align-self: flex-start;
+    background: var(--accent); color: var(--bg);
+    font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; font-family: inherit;
+    padding: 16px 40px; border: none;
+    border-radius: var(--radius); cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    margin-top: 8px;
+  }
+  .form-submit:hover { background: var(--white); transform: translateY(-2px); }
+
+  .form-success {
+    display: none; padding: 16px 20px;
+    border: 1px solid rgba(200,169,110,0.3);
+    background: rgba(200,169,110,0.05);
+    border-radius: var(--radius);
+    font-size: 13px; color: var(--accent);
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    padding: 40px 56px;
+    border-top: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 14px;
+    letter-spacing: 0.12em; color: var(--muted);
+    text-transform: uppercase;
+  }
+  .footer-logo span { color: var(--accent); }
+  .footer-copy {
+    font-size: 12px; color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .footer-links { display: flex; gap: 28px; }
+  .footer-links a {
+    font-size: 11px; color: var(--muted); text-decoration: none;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  /* ─── ANIMATIONS ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    section { padding: 80px 28px; }
+    nav, nav.scrolled { padding: 20px 28px; }
+    .nav-links { display: none; }
+    #hero { padding: 0 28px 60px; }
+    h1 { font-size: 52px; }
+    .hero-deco { display: none; }
+    .hero-stats { right: 28px; }
+    .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+    .services-grid { grid-template-columns: 1fr 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; gap: 2px; }
+    .pricing-card { border-right: none; border-bottom: 1px solid var(--line); }
+    .portfolio-grid { grid-template-columns: 1fr 1fr; }
+    .portfolio-grid .featured { grid-column: span 2; grid-row: span 1; }
+    .form-row { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 20px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">Texture<span>Lab</span></a>
+  <div class="nav-links">
+    <a href="#about">Studio</a>
+    <a href="#services">Services</a>
+    <a href="#portfolio">Portfolio</a>
+    <a href="#pricing">Tarifs</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <a href="#contact" class="nav-cta">Devis gratuit</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-deco">TL</div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Studio créatif — Textures & 3D</div>
+    <h1>Donnez vie<br>à vos <em>assets</em><br>de jeu.</h1>
+    <p class="hero-desc">Texture Lab conçoit et modifie textures, livrées de véhicules et modèles 3D pour vos projets de jeux vidéo et serveurs FiveM.</p>
+    <div class="hero-actions">
+      <a href="#portfolio" class="btn-primary">Voir le portfolio</a>
+      <a href="#services" class="btn-ghost">Nos services</a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div>
+      <div class="hero-stat-num">150+</div>
+      <div class="hero-stat-label">Projets livrés</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">48h</div>
+      <div class="hero-stat-label">Délai moyen</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">100%</div>
+      <div class="hero-stat-label">Sur-mesure</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><span class="marquee-dot"></span>Modification de textures</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Livrées de véhicules</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Handling FiveM</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Modélisation 3D</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Assets sur-mesure</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>GTA V & FiveM</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Export prêt à l'emploi</div>
+    <!-- duplicate for loop -->
+    <div class="marquee-item"><span class="marquee-dot"></span>Modification de textures</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Livrées de véhicules</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Handling FiveM</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Modélisation 3D</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Assets sur-mesure</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>GTA V & FiveM</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Export prêt à l'emploi</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text">
+        <div class="label reveal">Le Studio</div>
+        <h2 class="reveal reveal-delay-1">Un studio spécialisé,<br>une expertise pointue.</h2>
+        <p class="reveal reveal-delay-2">Texture Lab est un studio indépendant dédié à la création et la modification d'assets visuels pour les jeux vidéo. Nous intervenons sur l'ensemble du pipeline graphique : textures, matériaux, livrées, modèles 3D et paramètres de physique.</p>
+        <p class="reveal reveal-delay-3">Chaque projet est traité avec soin, dans le respect de vos contraintes techniques et artistiques. Nos livrables sont directement intégrables dans FiveM, GTA V ou tout autre moteur compatible.</p>
+      </div>
+      <div class="about-visual reveal reveal-delay-2">
+        <div class="about-visual-inner">
+          <div class="about-icon">TL</div>
+          <div style="font-size:11px; color: rgba(200,169,110,0.25); letter-spacing: 0.2em; text-transform: uppercase;">Studio créatif</div>
+        </div>
+        <div class="about-badge">
+          <strong>2022</strong>
+          Fondé
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="services-header">
+      <div>
+        <div class="label reveal">Ce que nous faisons</div>
+        <h2 class="reveal reveal-delay-1">Nos services</h2>
+      </div>
+      <a href="#contact" class="btn-ghost reveal reveal-delay-2">Commander un projet</a>
+    </div>
+    <div class="services-grid">
+
+      <div class="service-card reveal">
+        <div class="service-num">01</div>
+        <span class="service-icon">◈</span>
+        <div class="service-title">Modification de textures</div>
+        <p class="service-desc">Retexturisation complète ou partielle de véhicules, bâtiments, props et personnages. Travail sur les canaux diffuse, normal, specular et alpha.</p>
+        <div class="service-tags">
+          <span class="tag">.ytd</span>
+          <span class="tag">.png</span>
+          <span class="tag">DDS</span>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-num">02</div>
+        <span class="service-icon">◉</span>
+        <div class="service-title">Livrées de véhicules</div>
+        <p class="service-desc">Conception de livrées personnalisées pour vos véhicules FiveM : police, civils, utilitaires. Design vectoriel haute résolution, jusqu'à 4K.</p>
+        <div class="service-tags">
+          <span class="tag">4K</span>
+          <span class="tag">FiveM</span>
+          <span class="tag">Custom</span>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-num">03</div>
+        <span class="service-icon">⬡</span>
+        <div class="service-title">Handling de véhicules</div>
+        <p class="service-desc">Paramétrage complet des fichiers handling.meta : masse, traction, freinage, suspensions, vitesse de pointe. Physique réaliste ou arcade selon vos besoins.</p>
+        <div class="service-tags">
+          <span class="tag">handling.meta</span>
+          <span class="tag">Réaliste</span>
+        </div>
+      </div>
+
+      <div class="service-card reveal">
+        <div class="service-num">04</div>
+        <span class="service-icon">▦</span>
+        <div class="service-title">Modélisation 3D</div>
+        <p class="service-desc">Création et modification de modèles 3D optimisés pour GTA V / FiveM. Respect des contraintes de LOD, collision et embedding de textures.</p>
+        <div class="service-tags">
+          <span class="tag">.ydr</span>
+          <span class="tag">.yft</span>
+          <span class="tag">LOD</span>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-num">05</div>
+        <span class="service-icon">✦</span>
+        <div class="service-title">Packs assets complets</div>
+        <p class="service-desc">Livraison clé-en-main de packs d'assets cohérents pour vos serveurs : uniformes, véhicules, props, panneaux — tout en un seul lot coordonné.</p>
+        <div class="service-tags">
+          <span class="tag">Pack</span>
+          <span class="tag">Cohérent</span>
+          <span class="tag">Prêt</span>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-num">06</div>
+        <span class="service-icon">⟳</span>
+        <div class="service-title">Révisions & corrections</div>
+        <p class="service-desc">Reprise de textures existantes, corrections de bugs visuels (z-fighting, UV incorrectes, artefacts), adaptation à de nouvelles versions de mods.</p>
+        <div class="service-tags">
+          <span class="tag">Bugfix</span>
+          <span class="tag">Optimisation</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="container">
+    <div class="portfolio-header">
+      <div>
+        <div class="label reveal">Réalisations</div>
+        <h2 class="reveal reveal-delay-1">Portfolio</h2>
+      </div>
+      <div class="portfolio-filter reveal reveal-delay-2">
+        <button class="filter-btn active" onclick="filterPortfolio(this,'all')">Tout</button>
+        <button class="filter-btn" onclick="filterPortfolio(this,'texture')">Textures</button>
+        <button class="filter-btn" onclick="filterPortfolio(this,'livree')">Livrées</button>
+        <button class="filter-btn" onclick="filterPortfolio(this,'3d')">3D</button>
+      </div>
+    </div>
+
+    <div class="portfolio-grid reveal">
+      <div class="portfolio-item featured" data-cat="livree">
+        <div class="portfolio-item-bg pv1" style="height:100%; min-height:400px;">
+          <div class="pv-label">BMW M5 — Police<br>Livrée sur-mesure</div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-overlay-title">BMW M5 — Brigade de Police</div>
+          <div class="portfolio-overlay-sub">Livrée · 4K</div>
+        </div>
+      </div>
+
+      <div class="portfolio-item" data-cat="texture">
+        <div class="portfolio-item-bg pv2">
+          <div class="pv-label">Route<br>asphalt</div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-overlay-title">Pack Textures Routes</div>
+          <div class="portfolio-overlay-sub">Texture · 2048px</div>
+        </div>
+      </div>
+
+      <div class="portfolio-item" data-cat="3d">
+        <div class="portfolio-item-bg pv3">
+          <div class="pv-label">Prop<br>3D</div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-overlay-title">Prop Container Personnalisé</div>
+          <div class="portfolio-overlay-sub">Modélisation 3D</div>
+        </div>
+      </div>
+
+      <div class="portfolio-item" data-cat="livree">
+        <div class="portfolio-item-bg pv4">
+          <div class="pv-label">Dodge<br>Charger</div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-overlay-title">Dodge Charger — Gendarmerie</div>
+          <div class="portfolio-overlay-sub">Livrée · 2K</div>
+        </div>
+      </div>
+
+      <div class="portfolio-item" data-cat="texture">
+        <div class="portfolio-item-bg pv5">
+          <div class="pv-label">Bâtiment<br>textures</div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-overlay-title">Façades Urbaines Retexturisées</div>
+          <div class="portfolio-overlay-sub">Texture · 1024px</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:48px;">
+      <a href="#contact" class="btn-ghost" style="display:inline-flex;">Voir plus de réalisations</a>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="pricing-header reveal">
+      <div class="label" style="justify-content:center;">Transparence tarifaire</div>
+      <h2>Nos tarifs</h2>
+      <p>Des formules claires et sans surprise. Tarifs en euros, paiement sécurisé.</p>
+    </div>
+
+    <div class="pricing-grid reveal">
+
+      <div class="pricing-card">
+        <div class="pricing-name">Essentiel</div>
+        <div class="pricing-price">15<span>€</span></div>
+        <div class="pricing-sub">Par réalisation simple</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>Modification de texture unique</li>
+          <li>Résolution jusqu'à 1024×1024</li>
+          <li>1 révision incluse</li>
+          <li>Livraison en 48h</li>
+          <li class="off">Livrée véhicule complète</li>
+          <li class="off">Handling personnalisé</li>
+          <li class="off">Support prioritaire</li>
+        </ul>
+        <a href="#contact" class="pricing-cta">Commander</a>
+      </div>
+
+      <div class="pricing-card featured-price">
+        <div class="pricing-badge">Le plus demandé</div>
+        <div class="pricing-name">Studio</div>
+        <div class="pricing-price">45<span>€</span></div>
+        <div class="pricing-sub">Projet complet clé-en-main</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>Pack textures complet</li>
+          <li>Résolution jusqu'à 4096×4096</li>
+          <li>3 révisions incluses</li>
+          <li>Livrée véhicule incluse</li>
+          <li>Handling personnalisé</li>
+          <li>Livraison en 24h</li>
+          <li class="off">Support prioritaire</li>
+        </ul>
+        <a href="#contact" class="pricing-cta">Commander</a>
+      </div>
+
+      <div class="pricing-card">
+        <div class="pricing-name">Serveur</div>
+        <div class="pricing-price">Sur<span> devis</span></div>
+        <div class="pricing-sub">Pour projets complexes / récurrents</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>Tout du plan Studio</li>
+          <li>Volume illimité d'assets</li>
+          <li>Révisions illimitées</li>
+          <li>Modélisation 3D incluse</li>
+          <li>Support prioritaire dédié</li>
+          <li>Tarif mensuel négocié</li>
+          <li>Accès anticipé aux nouveautés</li>
+        </ul>
+        <a href="#contact" class="pricing-cta">Nous contacter</a>
+      </div>
+
+    </div>
+
+    <p class="pricing-note reveal">Des besoins spécifiques ? <a href="#contact">Décrivez votre projet</a> pour un devis sur-mesure.</p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <div class="label">Démarrons ensemble</div>
+        <h2>Parlez-nous<br>de votre projet.</h2>
+        <p>Remplissez le formulaire ou contactez-nous directement. Nous répondons sous 24h ouvrées avec une estimation détaillée.</p>
+        <div class="contact-details">
+          <div class="contact-detail">
+            <div class="contact-detail-icon">✉</div>
+            <div>
+              <div class="contact-detail-label">Email</div>
+              <div class="contact-detail-value">contact@texture-lab.fr</div>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">◈</div>
+            <div>
+              <div class="contact-detail-label">Discord</div>
+              <div class="contact-detail-value">TextureLab#0001</div>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">⟳</div>
+            <div>
+              <div class="contact-detail-label">Délai de réponse</div>
+              <div class="contact-detail-value">Sous 24h ouvrées</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-2">
+        <form class="contact-form" onsubmit="submitForm(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Prénom</label>
+              <input type="text" class="form-control" placeholder="Jean" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nom</label>
+              <input type="text" class="form-control" placeholder="Dupont" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" placeholder="jean@exemple.fr" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Service souhaité</label>
+            <select class="form-control">
+              <option value="">Sélectionnez un service…</option>
+              <option>Modification de textures</option>
+              <option>Livrée de véhicule</option>
+              <option>Handling de véhicule</option>
+              <option>Modélisation 3D</option>
+              <option>Pack assets complet</option>
+              <option>Autre / Sur-mesure</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description du projet</label>
+            <textarea class="form-control" placeholder="Décrivez votre projet, vos références, vos contraintes…" required></textarea>
+          </div>
+          <button type="submit" class="form-submit">Envoyer la demande →</button>
+          <div class="form-success" id="formSuccess">
+            ✓ Votre demande a bien été envoyée — nous revenons vers vous sous 24h !
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Texture<span>Lab</span></div>
+  <div class="footer-copy">© 2024 Texture Lab — Tous droits réservés</div>
+  <div class="footer-links">
+    <a href="#services">Services</a>
+    <a href="#portfolio">Portfolio</a>
+    <a href="#contact">Contact</a>
+  </div>
+</footer>
+
+<script>
+  // Cursor
+  const cur = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top  = e.clientY + 'px';
+  });
+  document.querySelectorAll('a, button, .portfolio-item, .service-card, .pricing-card').forEach(el => {
+    el.addEventListener('mouseenter', () => cur.classList.add('expand'));
+    el.addEventListener('mouseleave', () => cur.classList.remove('expand'));
+  });
+
+  // Navbar scroll
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Reveal on scroll
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Portfolio filter
+  function filterPortfolio(btn, cat) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.portfolio-item').forEach(item => {
+      const show = cat === 'all' || item.dataset.cat === cat;
+      item.style.opacity = show ? '1' : '0.2';
+      item.style.pointerEvents = show ? 'auto' : 'none';
+      item.style.transition = 'opacity 0.3s';
+    });
+  }
+
+  // Form submit
+  function submitForm(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.form-submit');
+    btn.textContent = 'Envoi…';
+    btn.disabled = true;
+    setTimeout(() => {
+      document.getElementById('formSuccess').style.display = 'block';
+      btn.style.display = 'none';
+    }, 900);
+  }
+
+  // Slider range for pricing inputs (init visible)
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.reveal').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) el.classList.add('visible');
+    });
+  });
+</script>
+</body>
+</html>
