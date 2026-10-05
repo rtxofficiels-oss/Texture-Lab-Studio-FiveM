@@ -1,1135 +1,263 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Texture Lab — Studio de création 3D & Textures</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Texture Lab Studio — FiveM Textures & Livrées</title>
+<meta name="description" content="Textures véhicules et vêtements FiveM, debadge, livrées personnalisées.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M50 3 97 50 50 97 3 50z' fill='%23c6ff00'/><path d='M30 38h40v10H55v26H45V48H30z' fill='%23070708'/></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:        #0b0c0e;
-    --bg2:       #111316;
-    --bg3:       #16181d;
-    --line:      rgba(255,255,255,0.07);
-    --line2:     rgba(255,255,255,0.13);
-    --text:      #e8e6e1;
-    --muted:     #6b6e78;
-    --accent:    #c8a96e;
-    --accent2:   #8a7046;
-    --white:     #f5f3ef;
-    --radius:    4px;
-  }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Instrument Sans', sans-serif;
-    font-weight: 400;
-    line-height: 1.65;
-    overflow-x: hidden;
-    cursor: none;
-  }
-
-  /* Custom cursor */
-  #cursor {
-    position: fixed; top: 0; left: 0; z-index: 9999;
-    width: 10px; height: 10px; border-radius: 50%;
-    background: var(--accent);
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    transition: transform 0.08s, width 0.2s, height 0.2s, opacity 0.2s;
-    mix-blend-mode: difference;
-  }
-  #cursor.expand { width: 40px; height: 40px; opacity: 0.4; }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 3px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--accent2); }
-
-  /* ─── NAV ─── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 24px 56px;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.3s, background 0.3s, padding 0.3s;
-  }
-  nav.scrolled {
-    background: rgba(11,12,14,0.9);
-    backdrop-filter: blur(16px);
-    border-color: var(--line);
-    padding: 16px 56px;
-  }
-  .nav-logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800; font-size: 18px;
-    letter-spacing: 0.12em; color: var(--white);
-    text-transform: uppercase; text-decoration: none;
-  }
-  .nav-logo span { color: var(--accent); }
-  .nav-links { display: flex; gap: 40px; }
-  .nav-links a {
-    font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--muted);
-    text-decoration: none; transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--white); }
-  .nav-cta {
-    font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--bg);
-    background: var(--accent); padding: 10px 24px;
-    border-radius: var(--radius); text-decoration: none;
-    transition: background 0.2s, transform 0.15s;
-  }
-  .nav-cta:hover { background: var(--white); transform: translateY(-1px); }
-
-  /* ─── SECTIONS ─── */
-  section { padding: 120px 56px; }
-  .container { max-width: 1200px; margin: 0 auto; }
-
-  .label {
-    font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
-    text-transform: uppercase; color: var(--accent);
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 20px;
-  }
-  .label::before {
-    content: ''; display: block;
-    width: 24px; height: 1px; background: var(--accent);
-  }
-
-  h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(36px, 4vw, 56px);
-    font-weight: 700; line-height: 1.1;
-    letter-spacing: -0.02em; color: var(--white);
-  }
-
-  /* ─── HERO ─── */
-  #hero {
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    justify-content: flex-end;
-    padding: 0 56px 80px;
-    position: relative; overflow: hidden;
-  }
-
-  .hero-bg {
-    position: absolute; inset: 0; z-index: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(200,169,110,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 80% at 10% 80%, rgba(200,169,110,0.03) 0%, transparent 50%);
-  }
-
-  /* Animated grid */
-  .hero-grid {
-    position: absolute; inset: 0; z-index: 0;
-    background-image:
-      linear-gradient(var(--line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size: 80px 80px;
-    mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 30%, transparent 100%);
-  }
-
-  /* Big decorative number */
-  .hero-deco {
-    position: absolute; right: 40px; top: 50%;
-    transform: translateY(-50%);
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(200px, 22vw, 340px);
-    font-weight: 800;
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(200,169,110,0.1);
-    line-height: 1; user-select: none;
-    letter-spacing: -0.06em;
-    pointer-events: none;
-  }
-
-  .hero-content { position: relative; z-index: 1; max-width: 820px; }
-
-  .hero-eyebrow {
-    font-size: 11px; font-weight: 500; letter-spacing: 0.2em;
-    text-transform: uppercase; color: var(--accent);
-    margin-bottom: 28px;
-    display: inline-flex; align-items: center; gap: 10px;
-  }
-  .hero-eyebrow::before {
-    content: ''; display: block;
-    width: 32px; height: 1px; background: var(--accent);
-  }
-
-  h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(52px, 7vw, 104px);
-    font-weight: 800; line-height: 0.95;
-    letter-spacing: -0.04em; color: var(--white);
-    margin-bottom: 32px;
-  }
-  h1 em { font-style: normal; color: var(--accent); }
-
-  .hero-desc {
-    font-size: 16px; color: var(--muted);
-    max-width: 480px; line-height: 1.7;
-    margin-bottom: 48px;
-  }
-
-  .hero-actions { display: flex; gap: 16px; align-items: center; }
-
-  .btn-primary {
-    display: inline-block;
-    background: var(--accent); color: var(--bg);
-    font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
-    text-transform: uppercase; text-decoration: none;
-    padding: 16px 36px; border-radius: var(--radius);
-    transition: background 0.2s, transform 0.15s;
-  }
-  .btn-primary:hover { background: var(--white); transform: translateY(-2px); }
-
-  .btn-ghost {
-    display: inline-flex; align-items: center; gap: 10px;
-    color: var(--muted); font-size: 12px; font-weight: 500;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    text-decoration: none; transition: color 0.2s;
-  }
-  .btn-ghost:hover { color: var(--white); }
-  .btn-ghost::after {
-    content: '→'; transition: transform 0.2s;
-  }
-  .btn-ghost:hover::after { transform: translateX(4px); }
-
-  .hero-stats {
-    position: absolute; right: 56px; bottom: 80px; z-index: 1;
-    display: flex; flex-direction: column; gap: 24px; text-align: right;
-  }
-  .hero-stat-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 32px; font-weight: 700; color: var(--white);
-    line-height: 1;
-  }
-  .hero-stat-label {
-    font-size: 11px; color: var(--muted);
-    letter-spacing: 0.1em; text-transform: uppercase;
-    margin-top: 4px;
-  }
-
-  /* ─── MARQUEE ─── */
-  .marquee-wrap {
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    overflow: hidden; padding: 18px 0;
-    background: var(--bg2);
-  }
-  .marquee-track {
-    display: flex; gap: 0;
-    animation: marquee 22s linear infinite;
-    white-space: nowrap;
-  }
-  .marquee-item {
-    display: inline-flex; align-items: center; gap: 32px;
-    padding: 0 40px;
-    font-size: 11px; font-weight: 500; letter-spacing: 0.2em;
-    text-transform: uppercase; color: var(--muted);
-  }
-  .marquee-dot {
-    width: 4px; height: 4px; border-radius: 50%;
-    background: var(--accent); flex-shrink: 0;
-  }
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-
-  /* ─── ABOUT ─── */
-  #about { background: var(--bg2); border-top: 1px solid var(--line); }
-  .about-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 80px; align-items: center;
-  }
-  .about-text p {
-    font-size: 15px; color: var(--muted);
-    line-height: 1.8; margin-top: 24px;
-  }
-  .about-text p + p { margin-top: 16px; }
-  .about-visual {
-    position: relative; aspect-ratio: 4/3;
-    border: 1px solid var(--line2); border-radius: 2px;
-    overflow: hidden;
-    background: var(--bg3);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .about-visual-inner {
-    width: 100%; height: 100%;
-    background:
-      repeating-linear-gradient(
-        45deg,
-        transparent, transparent 28px,
-        rgba(200,169,110,0.03) 28px, rgba(200,169,110,0.03) 29px
-      );
-    display: flex; align-items: center; justify-content: center;
-    flex-direction: column; gap: 12px;
-  }
-  .about-icon {
-    font-size: 56px; opacity: 0.15;
-    font-family: 'Syne', sans-serif; font-weight: 800;
-    color: var(--accent);
-    letter-spacing: -0.05em;
-  }
-  .about-badge {
-    position: absolute; bottom: 20px; right: 20px;
-    background: var(--bg); border: 1px solid var(--line2);
-    padding: 12px 18px; border-radius: var(--radius);
-    font-size: 11px; color: var(--muted); letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .about-badge strong { display: block; color: var(--accent); font-size: 18px; font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 2px; }
-
-  /* ─── SERVICES ─── */
-  #services { border-top: 1px solid var(--line); }
-  .services-header {
-    display: flex; justify-content: space-between; align-items: flex-end;
-    margin-bottom: 64px;
-  }
-  .services-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    border: 1px solid var(--line);
-  }
-  .service-card {
-    padding: 40px 36px;
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    position: relative; overflow: hidden;
-    transition: background 0.3s;
-  }
-  .service-card:nth-child(3n) { border-right: none; }
-  .service-card:nth-last-child(-n+3) { border-bottom: none; }
-  .service-card::after {
-    content: '';
-    position: absolute; bottom: 0; left: 0; right: 0;
-    height: 2px; background: var(--accent);
-    transform: scaleX(0); transform-origin: left;
-    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-  }
-  .service-card:hover { background: var(--bg2); }
-  .service-card:hover::after { transform: scaleX(1); }
-
-  .service-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 0.15em; color: var(--accent);
-    margin-bottom: 24px;
-  }
-  .service-icon {
-    font-size: 28px; margin-bottom: 16px;
-    display: block;
-  }
-  .service-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 18px; font-weight: 700; color: var(--white);
-    margin-bottom: 12px; line-height: 1.2;
-  }
-  .service-desc {
-    font-size: 13px; color: var(--muted); line-height: 1.7;
-  }
-  .service-tags {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    margin-top: 20px;
-  }
-  .tag {
-    font-size: 10px; font-weight: 500; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--accent2);
-    border: 1px solid var(--line2);
-    padding: 4px 10px; border-radius: 2px;
-    background: rgba(200,169,110,0.04);
-  }
-
-  /* ─── PORTFOLIO ─── */
-  #portfolio { background: var(--bg2); border-top: 1px solid var(--line); }
-  .portfolio-header {
-    display: flex; justify-content: space-between; align-items: flex-end;
-    margin-bottom: 48px;
-  }
-  .portfolio-filter {
-    display: flex; gap: 6px;
-  }
-  .filter-btn {
-    font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--muted);
-    background: none; border: 1px solid var(--line);
-    padding: 8px 16px; cursor: pointer;
-    border-radius: var(--radius);
-    transition: all 0.2s; font-family: inherit;
-  }
-  .filter-btn:hover, .filter-btn.active {
-    color: var(--bg); background: var(--accent); border-color: var(--accent);
-  }
-
-  .portfolio-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-  }
-  .portfolio-grid .featured {
-    grid-column: span 2; grid-row: span 2;
-  }
-
-  .portfolio-item {
-    position: relative; overflow: hidden;
-    aspect-ratio: 1; background: var(--bg3);
-    cursor: pointer;
-  }
-  .portfolio-item.featured { aspect-ratio: auto; }
-  .portfolio-item-bg {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
-  }
-  .portfolio-item:hover .portfolio-item-bg { transform: scale(1.04); }
-
-  .portfolio-overlay {
-    position: absolute; inset: 0;
-    background: rgba(11,12,14,0.75);
-    display: flex; flex-direction: column;
-    justify-content: flex-end; padding: 24px;
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .portfolio-item:hover .portfolio-overlay { opacity: 1; }
-  .portfolio-overlay-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 16px; font-weight: 700; color: var(--white);
-    margin-bottom: 4px;
-  }
-  .portfolio-overlay-sub {
-    font-size: 11px; color: var(--accent);
-    letter-spacing: 0.1em; text-transform: uppercase;
-  }
-
-  /* Portfolio visual placeholders */
-  .pv1 { background: linear-gradient(135deg, #1a1208 0%, #2c1f0a 50%, #1a1208 100%); }
-  .pv2 { background: linear-gradient(135deg, #0d1017 0%, #141b26 50%, #0d1017 100%); }
-  .pv3 { background: linear-gradient(135deg, #12100d 0%, #1f1b14 50%, #12100d 100%); }
-  .pv4 { background: linear-gradient(135deg, #0e0f12 0%, #181a20 50%, #0e0f12 100%); }
-  .pv5 { background: linear-gradient(135deg, #110d08 0%, #1c1509 50%, #110d08 100%); }
-
-  .pv-label {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(14px, 2.5vw, 22px);
-    font-weight: 700;
-    color: rgba(200,169,110,0.15);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    text-align: center;
-    padding: 16px;
-  }
-
-  /* ─── PRICING ─── */
-  #pricing { border-top: 1px solid var(--line); }
-  .pricing-header { text-align: center; margin-bottom: 64px; }
-  .pricing-header p { font-size: 15px; color: var(--muted); margin-top: 16px; }
-
-  .pricing-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 2px; border: 1px solid var(--line);
-  }
-  .pricing-card {
-    padding: 44px 36px;
-    border-right: 1px solid var(--line);
-    position: relative; transition: background 0.3s;
-  }
-  .pricing-card:last-child { border-right: none; }
-  .pricing-card.featured-price {
-    background: var(--bg2);
-    border-color: var(--accent2);
-  }
-  .pricing-badge {
-    font-size: 10px; font-weight: 500; letter-spacing: 0.15em;
-    text-transform: uppercase; color: var(--bg);
-    background: var(--accent); padding: 4px 12px;
-    border-radius: 2px; display: inline-block;
-    margin-bottom: 24px;
-  }
-  .pricing-name {
-    font-family: 'Syne', sans-serif;
-    font-size: 14px; font-weight: 700; color: var(--muted);
-    letter-spacing: 0.12em; text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-  .pricing-price {
-    font-family: 'Syne', sans-serif;
-    font-size: 48px; font-weight: 800; color: var(--white);
-    line-height: 1; margin-bottom: 6px;
-  }
-  .pricing-price span { font-size: 20px; color: var(--muted); font-weight: 400; }
-  .pricing-sub { font-size: 12px; color: var(--muted); margin-bottom: 32px; }
-  .pricing-divider { height: 1px; background: var(--line); margin-bottom: 28px; }
-  .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-  .pricing-features li {
-    font-size: 13px; color: var(--muted);
-    display: flex; gap: 10px; align-items: flex-start;
-  }
-  .pricing-features li::before {
-    content: '✓'; color: var(--accent);
-    font-weight: 600; flex-shrink: 0; margin-top: 1px;
-  }
-  .pricing-features li.off { opacity: 0.35; }
-  .pricing-features li.off::before { content: '×'; color: var(--muted); }
-  .pricing-cta {
-    display: block; margin-top: 36px;
-    text-align: center;
-    font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
-    text-transform: uppercase; text-decoration: none;
-    padding: 14px 24px; border-radius: var(--radius);
-    transition: all 0.2s;
-    border: 1px solid var(--line2); color: var(--muted);
-  }
-  .pricing-cta:hover { border-color: var(--accent); color: var(--accent); }
-  .pricing-card.featured-price .pricing-cta {
-    background: var(--accent); color: var(--bg);
-    border-color: var(--accent);
-  }
-  .pricing-card.featured-price .pricing-cta:hover {
-    background: var(--white); border-color: var(--white);
-  }
-
-  .pricing-note {
-    text-align: center; margin-top: 32px;
-    font-size: 13px; color: var(--muted);
-  }
-  .pricing-note a { color: var(--accent); text-decoration: none; }
-
-  /* ─── CONTACT ─── */
-  #contact { background: var(--bg2); border-top: 1px solid var(--line); }
-  .contact-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 80px; align-items: flex-start;
-  }
-  .contact-info h2 { margin-bottom: 20px; }
-  .contact-info p { font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 40px; }
-  .contact-details { display: flex; flex-direction: column; gap: 20px; }
-  .contact-detail {
-    display: flex; gap: 16px; align-items: flex-start;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--line);
-  }
-  .contact-detail:last-child { border-bottom: none; }
-  .contact-detail-icon {
-    width: 36px; height: 36px; border-radius: var(--radius);
-    border: 1px solid var(--line2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; flex-shrink: 0; color: var(--accent);
-  }
-  .contact-detail-label {
-    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 2px;
-  }
-  .contact-detail-value {
-    font-size: 14px; color: var(--white); font-weight: 500;
-  }
-
-  .contact-form { display: flex; flex-direction: column; gap: 16px; }
-
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .form-group { display: flex; flex-direction: column; gap: 8px; }
-  .form-label {
-    font-size: 10px; font-weight: 500; letter-spacing: 0.15em;
-    text-transform: uppercase; color: var(--muted);
-  }
-  .form-control {
-    background: var(--bg3); border: 1px solid var(--line);
-    border-radius: var(--radius);
-    color: var(--text); font-family: inherit;
-    font-size: 14px; padding: 14px 16px;
-    outline: none; transition: border-color 0.2s;
-    width: 100%;
-  }
-  .form-control:focus { border-color: var(--accent); }
-  .form-control::placeholder { color: var(--muted); }
-  textarea.form-control { resize: vertical; min-height: 120px; }
-
-  select.form-control { cursor: pointer; }
-  select.form-control option { background: var(--bg3); }
-
-  .form-submit {
-    align-self: flex-start;
-    background: var(--accent); color: var(--bg);
-    font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
-    text-transform: uppercase; font-family: inherit;
-    padding: 16px 40px; border: none;
-    border-radius: var(--radius); cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
-    margin-top: 8px;
-  }
-  .form-submit:hover { background: var(--white); transform: translateY(-2px); }
-
-  .form-success {
-    display: none; padding: 16px 20px;
-    border: 1px solid rgba(200,169,110,0.3);
-    background: rgba(200,169,110,0.05);
-    border-radius: var(--radius);
-    font-size: 13px; color: var(--accent);
-  }
-
-  /* ─── FOOTER ─── */
-  footer {
-    padding: 40px 56px;
-    border-top: 1px solid var(--line);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .footer-logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800; font-size: 14px;
-    letter-spacing: 0.12em; color: var(--muted);
-    text-transform: uppercase;
-  }
-  .footer-logo span { color: var(--accent); }
-  .footer-copy {
-    font-size: 12px; color: var(--muted);
-    letter-spacing: 0.05em;
-  }
-  .footer-links { display: flex; gap: 28px; }
-  .footer-links a {
-    font-size: 11px; color: var(--muted); text-decoration: none;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    transition: color 0.2s;
-  }
-  .footer-links a:hover { color: var(--accent); }
-
-  /* ─── ANIMATIONS ─── */
-  .reveal {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
-  }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-  .reveal-delay-1 { transition-delay: 0.1s; }
-  .reveal-delay-2 { transition-delay: 0.2s; }
-  .reveal-delay-3 { transition-delay: 0.3s; }
-  .reveal-delay-4 { transition-delay: 0.4s; }
-
-  /* ─── RESPONSIVE ─── */
-  @media (max-width: 900px) {
-    section { padding: 80px 28px; }
-    nav, nav.scrolled { padding: 20px 28px; }
-    .nav-links { display: none; }
-    #hero { padding: 0 28px 60px; }
-    h1 { font-size: 52px; }
-    .hero-deco { display: none; }
-    .hero-stats { right: 28px; }
-    .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 48px; }
-    .services-grid { grid-template-columns: 1fr 1fr; }
-    .pricing-grid { grid-template-columns: 1fr; gap: 2px; }
-    .pricing-card { border-right: none; border-bottom: 1px solid var(--line); }
-    .portfolio-grid { grid-template-columns: 1fr 1fr; }
-    .portfolio-grid .featured { grid-column: span 2; grid-row: span 1; }
-    .form-row { grid-template-columns: 1fr; }
-    footer { flex-direction: column; gap: 20px; text-align: center; }
-  }
+:root{--bg:#070708;--card:#101012;--line:#232327;--tx:#f2f2ee;--mut:#8d8d95;--lime:#c6ff00;--pink:#ff2d95}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{background:var(--bg);color:var(--tx);font:16px/1.6 Inter,system-ui,sans-serif;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom,0)}
+h1,h2,h3,.brand{font-family:'Space Grotesk',Inter,sans-serif;letter-spacing:-.02em}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1120px;margin:auto;padding:0 22px}
+#glow{position:fixed;width:520px;height:520px;border-radius:50%;pointer-events:none;background:radial-gradient(closest-side,rgba(198,255,0,.10),transparent);transform:translate(-50%,-50%);z-index:0;left:50%;top:30%}
+body:before{content:"";position:fixed;inset:0;background:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:56px 56px;opacity:.22;pointer-events:none;mask-image:radial-gradient(ellipse at 50% 0,#000,transparent 75%)}
+main,nav,footer{position:relative;z-index:1}
+nav{position:sticky;top:0;z-index:20;background:rgba(7,7,8,.75);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem}
+.brand svg{width:34px;height:34px}
+.brand em{font-style:normal;color:var(--lime)}
+.links{display:flex;gap:26px;font-size:.92rem;color:var(--mut)}
+.links a:hover{color:var(--lime)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:999px;font-weight:600;background:var(--lime);color:#000;border:0;cursor:pointer;font:600 .95rem Inter,sans-serif;transition:.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 30px -4px var(--lime)}
+.btn.o{background:none;color:var(--tx);border:1px solid var(--line)}
+.btn.o:hover{border-color:var(--lime);box-shadow:none}
+.btn.dc{background:#5865f2;color:#fff}.btn.dc:hover{box-shadow:0 0 30px -4px #5865f2}
+.btn svg{width:18px;height:18px;fill:currentColor}
+.user{position:relative}
+.chip{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 14px 4px 4px;cursor:pointer;color:var(--tx);font:500 .9rem Inter}
+.chip img{width:32px;height:32px;border-radius:50%}
+.menu{position:absolute;right:0;top:48px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px;min-width:200px;display:none}
+.menu.on{display:block}
+.menu a,.menu button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--tx);padding:9px 12px;border-radius:8px;cursor:pointer;font:inherit;font-size:.9rem}
+.menu a:hover,.menu button:hover{background:var(--line)}
+.hide{display:none!important}
+/* hero */
+.hero{padding:110px 0 70px}
+.pill{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);padding:5px 14px;border-radius:99px;font-size:.8rem;color:var(--mut)}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);animation:p 1.6s infinite}
+@keyframes p{50%{opacity:.3}}
+h1{font-size:clamp(3rem,10.5vw,8rem);line-height:.92;margin:22px 0;text-transform:uppercase}
+h1 .o{color:transparent;-webkit-text-stroke:2px var(--lime)}
+h1 .g{position:relative}
+.hero p{max-width:540px;color:var(--mut);font-size:1.1rem;margin-bottom:32px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.stats{display:flex;gap:clamp(24px,6vw,70px);margin-top:60px;flex-wrap:wrap}
+.stats b{font:700 2.6rem 'Space Grotesk';display:block;color:var(--lime)}
+.stats span{color:var(--mut);font-size:.85rem}
+.mq{border-block:1px solid var(--line);overflow:hidden;white-space:nowrap;padding:16px 0;background:var(--lime);color:#000}
+.mq div{display:inline-block;animation:m 28s linear infinite;font:700 1.3rem 'Space Grotesk';text-transform:uppercase}
+.mq span{margin:0 26px}
+@keyframes m{to{transform:translateX(-50%)}}
+section{padding:90px 0}
+.k{color:var(--lime);font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px}
+h2{font-size:clamp(2rem,5vw,3.4rem);line-height:1;margin-bottom:40px;text-transform:uppercase}
+/* bento */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.bx{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px;grid-column:span 2;transition:.3s;position:relative;overflow:hidden}
+.bx.w{grid-column:span 3}.bx.x{grid-column:span 4}
+.bx:hover{border-color:var(--lime);transform:translateY(-4px)}
+.bx:after{content:attr(data-n);position:absolute;right:20px;top:10px;font:700 4rem 'Space Grotesk';color:rgba(255,255,255,.04)}
+.bx h3{font-size:1.3rem;margin:14px 0 6px}
+.bx p{color:var(--mut);font-size:.95rem}
+.bx .e{font-size:1.8rem;width:52px;height:52px;border-radius:14px;display:grid;place-items:center;border:1px solid var(--line);background:#0a0a0c}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
+.tags i{font-style:normal;font-size:.72rem;border:1px solid var(--line);border-radius:99px;padding:2px 11px;color:var(--lime)}
+/* portfolio */
+.pf{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.it{border-radius:20px;overflow:hidden;border:1px solid var(--line);background:var(--card);position:relative}
+.it .im{aspect-ratio:16/11;background:linear-gradient(135deg,#1c1c20,#0c0c0e);overflow:hidden;position:relative}
+.it .im img{width:100%;height:100%;object-fit:cover;display:block;transition:.5s}
+.it:hover img{transform:scale(1.07)}
+.it .im.ph:after{content:"+ ajoute ton image";position:absolute;inset:0;display:grid;place-items:center;color:var(--mut);font-size:.85rem;background:repeating-linear-gradient(115deg,transparent 0 22px,rgba(255,255,255,.03) 22px 44px)}
+.it .t{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.it h3{font-size:1.05rem}.it small{color:var(--mut)}
+.it .b{font-size:.72rem;background:var(--lime);color:#000;padding:3px 11px;border-radius:99px;font-weight:600;white-space:nowrap}
+/* pricing */
+.pr{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:32px;display:flex;flex-direction:column}
+.pc.h{border-color:var(--lime);background:linear-gradient(180deg,rgba(198,255,0,.07),var(--card))}
+.pc b{font:700 3rem 'Space Grotesk';display:block;margin:8px 0}
+.pc b small{font-size:1rem;color:var(--mut);font-weight:500}
+.pc ul{list-style:none;padding:0;margin:14px 0 26px;flex:1;color:var(--mut);font-size:.93rem}
+.pc li{padding:7px 0;border-bottom:1px solid var(--line)}
+.pc li:before{content:"→ ";color:var(--lime)}
+.pc .btn{justify-content:center}
+/* contact */
+.ct{display:grid;grid-template-columns:1fr 1.4fr;gap:20px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:32px}
+.box p{color:var(--mut);margin:10px 0}.box b{color:var(--tx);display:block}
+form{display:grid;gap:12px}
+input,select,textarea{width:100%;background:#0a0a0c;border:1px solid var(--line);border-radius:12px;padding:13px 15px;color:var(--tx);font:inherit}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--lime)}
+footer{border-top:1px solid var(--line);padding:34px 0;color:var(--mut);font-size:.85rem;text-align:center}
+footer a{margin:0 10px}footer a:hover{color:var(--lime)}
+/* modal bienvenue */
+#welcome{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:none;place-items:center;padding:20px}
+#welcome.on{display:grid}
+#welcome .box{max-width:420px;text-align:center;border-color:var(--lime)}
+#welcome img{width:84px;height:84px;border-radius:50%;border:3px solid var(--lime);margin-bottom:12px}
+#welcome .cta{justify-content:center;margin-top:20px}
+.rv{opacity:0;transform:translateY(30px);transition:.8s}.rv.on{opacity:1;transform:none}
+@media(max-width:820px){.links{display:none}.ct{grid-template-columns:1fr}.bx,.bx.w,.bx.x{grid-column:span 6}}
 </style>
 </head>
 <body>
+<div id="glow"></div>
 
-<div id="cursor"></div>
+<svg width="0" height="0" style="position:absolute"><symbol id="logo" viewBox="0 0 100 100">
+<path d="M50 3 97 50 50 97 3 50z" fill="#c6ff00"/>
+<path d="M29 37h42v11H55.5v27h-11V48H29z" fill="#070708"/>
+<rect x="62" y="58" width="9" height="9" fill="#070708"/><rect x="71" y="67" width="9" height="9" fill="#070708"/><rect x="71" y="49" width="9" height="9" fill="#070708" opacity=".45"/>
+</symbol><symbol id="dc" viewBox="0 0 24 24"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.5a18 18 0 0 0-6.4 0L8.6 3a19.8 19.8 0 0 0-4.9 1.4C.6 9 0 13.5.3 18a20 20 0 0 0 6 3l1.3-2.1-2-.9.5-.4a14 14 0 0 0 12 0l.5.4-2 1 1.3 2a20 20 0 0 0 6-3c.4-5.200-.7-9.600-3.600-13.600ZM8.300 15.300c-1.200 0-2.200-1.100-2.200-2.400s1-2.400 2.200-2.400 2.200 1.100 2.200 2.400-1 2.400-2.200 2.400Zm7.400 0c-1.200 0-2.200-1.100-2.200-2.400s1-2.400 2.200-2.400 2.200 1.100 2.200 2.400-1 2.400-2.200 2.400Z"/></symbol></svg>
 
-<!-- NAV -->
-<nav id="navbar">
-  <a href="#hero" class="nav-logo">Texture<span>Lab</span></a>
-  <div class="nav-links">
-    <a href="#about">Studio</a>
-    <a href="#services">Services</a>
-    <a href="#portfolio">Portfolio</a>
-    <a href="#pricing">Tarifs</a>
-    <a href="#contact">Contact</a>
-  </div>
-  <a href="#contact" class="nav-cta">Devis gratuit</a>
-</nav>
-
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-deco">TL</div>
-
-  <div class="hero-content">
-    <div class="hero-eyebrow">Studio créatif — Textures & 3D</div>
-    <h1>Donnez vie<br>à vos <em>assets</em><br>de jeu.</h1>
-    <p class="hero-desc">Texture Lab conçoit et modifie textures, livrées de véhicules et modèles 3D pour vos projets de jeux vidéo et serveurs FiveM.</p>
-    <div class="hero-actions">
-      <a href="#portfolio" class="btn-primary">Voir le portfolio</a>
-      <a href="#services" class="btn-ghost">Nos services</a>
-    </div>
-  </div>
-
-  <div class="hero-stats">
-    <div>
-      <div class="hero-stat-num">150+</div>
-      <div class="hero-stat-label">Projets livrés</div>
-    </div>
-    <div>
-      <div class="hero-stat-num">48h</div>
-      <div class="hero-stat-label">Délai moyen</div>
-    </div>
-    <div>
-      <div class="hero-stat-num">100%</div>
-      <div class="hero-stat-label">Sur-mesure</div>
-    </div>
-  </div>
-</section>
-
-<!-- MARQUEE -->
-<div class="marquee-wrap">
-  <div class="marquee-track">
-    <div class="marquee-item"><span class="marquee-dot"></span>Modification de textures</div>
-    <div class="marquee-item"><span class="marquee-dot"></span>Livrées de véhicules</div>
-    <div class="marquee-item"><span class="marquee-dot"></span>Handling FiveM</div>
-    <div class="marquee-item"><span class="marquee-dot"></span>Modélisation 3D</div>
-    <div class="marquee-item"><span class="marquee-dot"></span>Assets sur-mesure</div>
-    <div class="marquee-item"><span class="marquee-dot"></span>GTA V & FiveM</div>
-    <div class="marquee-item"><span class="marquee-dot"></span>Export prêt à l'emploi</div>
-    <!-- duplicate for loop -->
-    <div class="marquee-item"><span class="marquee-dot"></span>Modification de textures</div>
-    <div class="marquee-item"><span class="marquee-dot"></span>Livrées de véhicules</div>
-    <div class="marquee-item"><span class="marquee-dot"></span>Handling FiveM</div>
-    <div class="marquee-item"><span class="marquee-dot"></span>Modélisation 3D</div>
-    <div class="marquee-item"><span class="marquee-dot"></span>Assets sur-mesure</div>
-    <div class="marquee-item"><span class="marquee-dot"></span>GTA V & FiveM</div>
-    <div class="marquee-item"><span class="marquee-dot"></span>Export prêt à l'emploi</div>
-  </div>
-</div>
-
-<!-- ABOUT -->
-<section id="about">
-  <div class="container">
-    <div class="about-grid">
-      <div class="about-text">
-        <div class="label reveal">Le Studio</div>
-        <h2 class="reveal reveal-delay-1">Un studio spécialisé,<br>une expertise pointue.</h2>
-        <p class="reveal reveal-delay-2">Texture Lab est un studio indépendant dédié à la création et la modification d'assets visuels pour les jeux vidéo. Nous intervenons sur l'ensemble du pipeline graphique : textures, matériaux, livrées, modèles 3D et paramètres de physique.</p>
-        <p class="reveal reveal-delay-3">Chaque projet est traité avec soin, dans le respect de vos contraintes techniques et artistiques. Nos livrables sont directement intégrables dans FiveM, GTA V ou tout autre moteur compatible.</p>
-      </div>
-      <div class="about-visual reveal reveal-delay-2">
-        <div class="about-visual-inner">
-          <div class="about-icon">TL</div>
-          <div style="font-size:11px; color: rgba(200,169,110,0.25); letter-spacing: 0.2em; text-transform: uppercase;">Studio créatif</div>
-        </div>
-        <div class="about-badge">
-          <strong>2022</strong>
-          Fondé
-        </div>
+<nav><div class="wrap">
+  <a class="brand" href="#top"><svg><use href="#logo"/></svg>Texture Lab <em>Studio</em></a>
+  <div class="links"><a href="#services">Services</a><a href="#portfolio">Portfolio</a><a href="#tarifs">Tarifs</a><a href="#contact">Contact</a></div>
+  <div>
+    <button class="btn dc" id="login"><svg><use href="#dc"/></svg>Login</button>
+    <div class="user hide" id="user">
+      <button class="chip" id="chip"><img id="av" alt=""><span id="un"></span></button>
+      <div class="menu" id="menu">
+        <a id="joinlink" href="https://discord.gg/V35rU9s7g4" target="_blank" rel="noopener">Rejoindre le Discord</a>
+        <a href="#contact">Passer commande</a>
+        <button id="logout">Se déconnecter</button>
       </div>
     </div>
   </div>
-</section>
+</div></nav>
 
-<!-- SERVICES -->
-<section id="services">
-  <div class="container">
-    <div class="services-header">
-      <div>
-        <div class="label reveal">Ce que nous faisons</div>
-        <h2 class="reveal reveal-delay-1">Nos services</h2>
-      </div>
-      <a href="#contact" class="btn-ghost reveal reveal-delay-2">Commander un projet</a>
-    </div>
-    <div class="services-grid">
+<main id="top">
+<header class="hero"><div class="wrap">
+  <span class="pill"><i></i>Studio FiveM — commandes ouvertes</span>
+  <h1>Textures<br><span class="o">sans</span> limites<span style="color:var(--lime)">.</span></h1>
+  <p>Retexture de véhicules et vêtements, debadge des logos 3D, livrées 100 % personnalisées. Du sur-mesure, prêt à glisser dans ton serveur.</p>
+  <div class="cta"><a class="btn" href="#portfolio">Voir les créations</a><a class="btn o" href="#contact">Devis gratuit</a></div>
+  <div class="stats"><div><b>150+</b><span>Projets livrés</span></div><div><b>48h</b><span>Délai moyen</span></div><div><b>100%</b><span>Sur-mesure</span></div></div>
+</div></header>
 
-      <div class="service-card reveal">
-        <div class="service-num">01</div>
-        <span class="service-icon">◈</span>
-        <div class="service-title">Modification de textures</div>
-        <p class="service-desc">Retexturisation complète ou partielle de véhicules, bâtiments, props et personnages. Travail sur les canaux diffuse, normal, specular et alpha.</p>
-        <div class="service-tags">
-          <span class="tag">.ytd</span>
-          <span class="tag">.png</span>
-          <span class="tag">DDS</span>
-        </div>
-      </div>
+<div class="mq"><div id="mq"></div></div>
 
-      <div class="service-card reveal reveal-delay-1">
-        <div class="service-num">02</div>
-        <span class="service-icon">◉</span>
-        <div class="service-title">Livrées de véhicules</div>
-        <p class="service-desc">Conception de livrées personnalisées pour vos véhicules FiveM : police, civils, utilitaires. Design vectoriel haute résolution, jusqu'à 4K.</p>
-        <div class="service-tags">
-          <span class="tag">4K</span>
-          <span class="tag">FiveM</span>
-          <span class="tag">Custom</span>
-        </div>
-      </div>
-
-      <div class="service-card reveal reveal-delay-2">
-        <div class="service-num">03</div>
-        <span class="service-icon">⬡</span>
-        <div class="service-title">Handling de véhicules</div>
-        <p class="service-desc">Paramétrage complet des fichiers handling.meta : masse, traction, freinage, suspensions, vitesse de pointe. Physique réaliste ou arcade selon vos besoins.</p>
-        <div class="service-tags">
-          <span class="tag">handling.meta</span>
-          <span class="tag">Réaliste</span>
-        </div>
-      </div>
-
-      <div class="service-card reveal">
-        <div class="service-num">04</div>
-        <span class="service-icon">▦</span>
-        <div class="service-title">Modélisation 3D</div>
-        <p class="service-desc">Création et modification de modèles 3D optimisés pour GTA V / FiveM. Respect des contraintes de LOD, collision et embedding de textures.</p>
-        <div class="service-tags">
-          <span class="tag">.ydr</span>
-          <span class="tag">.yft</span>
-          <span class="tag">LOD</span>
-        </div>
-      </div>
-
-      <div class="service-card reveal reveal-delay-1">
-        <div class="service-num">05</div>
-        <span class="service-icon">✦</span>
-        <div class="service-title">Packs assets complets</div>
-        <p class="service-desc">Livraison clé-en-main de packs d'assets cohérents pour vos serveurs : uniformes, véhicules, props, panneaux — tout en un seul lot coordonné.</p>
-        <div class="service-tags">
-          <span class="tag">Pack</span>
-          <span class="tag">Cohérent</span>
-          <span class="tag">Prêt</span>
-        </div>
-      </div>
-
-      <div class="service-card reveal reveal-delay-2">
-        <div class="service-num">06</div>
-        <span class="service-icon">⟳</span>
-        <div class="service-title">Révisions & corrections</div>
-        <p class="service-desc">Reprise de textures existantes, corrections de bugs visuels (z-fighting, UV incorrectes, artefacts), adaptation à de nouvelles versions de mods.</p>
-        <div class="service-tags">
-          <span class="tag">Bugfix</span>
-          <span class="tag">Optimisation</span>
-        </div>
-      </div>
-
-    </div>
+<section id="services"><div class="wrap">
+  <div class="k rv">// Services</div><h2 class="rv">Ce que je fais</h2>
+  <div class="bento rv">
+    <div class="bx x" data-n="01"><div class="e">🚗</div><h3>Textures de véhicules</h3><p>Retexture complète ou partielle : carrosserie, jantes, intérieur. Diffuse, normal, specular, alpha.</p><div class="tags"><i>.ytd</i><i>.png</i><i>DDS</i><i>Jusqu'à 4K</i></div></div>
+    <div class="bx" data-n="02"><div class="e">👕</div><h3>Vêtements</h3><p>Hoodies, uniformes, tenues pour tes factions et crews.</p></div>
+    <div class="bx" data-n="03"><div class="e">🧹</div><h3>Debadge 3D</h3><p>Retrait propre des logos et emblèmes 3D, sans casser le modèle.</p></div>
+    <div class="bx x" data-n="04"><div class="e">🎨</div><h3>Livrées personnalisées</h3><p>Police, taxi, entreprises, racing : ton design adapté à chaque véhicule, en haute résolution.</p><div class="tags"><i>4K</i><i>FiveM</i><i>Custom</i></div></div>
+    <div class="bx w" data-n="05"><div class="e">⚙️</div><h3>Handling</h3><p>Paramétrage handling.meta : réaliste ou arcade.</p></div>
+    <div class="bx w" data-n="06"><div class="e">🧊</div><h3>Modélisation 3D</h3><p>Props et modèles optimisés LOD, collisions, textures embarquées.</p></div>
   </div>
-</section>
+</div></section>
 
-<!-- PORTFOLIO -->
-<section id="portfolio">
-  <div class="container">
-    <div class="portfolio-header">
-      <div>
-        <div class="label reveal">Réalisations</div>
-        <h2 class="reveal reveal-delay-1">Portfolio</h2>
-      </div>
-      <div class="portfolio-filter reveal reveal-delay-2">
-        <button class="filter-btn active" onclick="filterPortfolio(this,'all')">Tout</button>
-        <button class="filter-btn" onclick="filterPortfolio(this,'texture')">Textures</button>
-        <button class="filter-btn" onclick="filterPortfolio(this,'livree')">Livrées</button>
-        <button class="filter-btn" onclick="filterPortfolio(this,'3d')">3D</button>
-      </div>
-    </div>
-
-    <div class="portfolio-grid reveal">
-      <div class="portfolio-item featured" data-cat="livree">
-        <div class="portfolio-item-bg">
-  <img src="https://i.postimg.cc/4xL8yy9x/Capture-d-ecran-2026-10-05-190445.png" alt="Brabus" style="width:100%; height:100%; object-fit:cover;">
-</div>
-        <div class="portfolio-overlay">
-          <div class="portfolio-overlay-title">Brabus Rocket 900 debadge</div>
-          <div class="portfolio-overlay-sub">Livrée · 4K</div>
-        </div>
-      </div>
-
-      <div class="portfolio-item" data-cat="texture">
-               <div class="portfolio-item-bg pv2">
-  <img src="https://i.postimg.cc/x8jZhvCS/7bc599-Lost-MC-Hoodie-1.webp" alt="Textures Vêtement" style="width:100%; height:100%; object-fit:cover;">
-</div>
-        <div class="portfolio-overlay">
-          <div class="portfolio-overlay-title">Textures Vêtement</div>
-          <div class="portfolio-overlay-sub">Texture · 2048px</div>
-        </div>
-      </div>
-
-      <div class="portfolio-item" data-cat="3d">
-        <div class="portfolio-item-bg pv3">
-          <div class="pv-label">Prop<br>3D</div>
-        </div>
-        <div class="portfolio-overlay">
-          <div class="portfolio-overlay-title">Prop Container Personnalisé</div>
-          <div class="portfolio-overlay-sub">Modélisation 3D</div>
-        </div>
-      </div>
-
-      <div class="portfolio-item" data-cat="livree">
-                <div class="portfolio-item-bg pv4">
-  <img src="https://i.postimg.cc/KvnMgGWB/hq720.png" alt="Dodge Charger" style="width:100%; height:100%; object-fit:cover;">
-</div>
-        <div class="portfolio-overlay">
-          <div class="portfolio-overlay-title">Dodge Charger</div>
-          <div class="portfolio-overlay-sub">débadger · 2K</div>
-        </div>
-      </div>
-
-      <div class="portfolio-item" data-cat="texture">
-        <div class="portfolio-item-bg pv5">
-          <div class="pv-label">Bâtiment<br>textures</div>
-        </div>
-        <div class="portfolio-overlay">
-          <div class="portfolio-overlay-title">Façades Urbaines Retexturisées</div>
-          <div class="portfolio-overlay-sub">Texture · 1024px</div>
-        </div>
-      </div>
-    </div>
+<section id="portfolio"><div class="wrap">
+  <div class="k rv">// Portfolio</div><h2 class="rv">Réalisations</h2>
+  <div class="pf rv">
+    <div class="it"><div class="im"><img loading="lazy" src="https://i.postimg.cc/4xL8yy9x/Capture-d-ecran-2026-10-05-190445.png" alt="Brabus Rocket 900"></div><div class="t"><div><h3>Brabus Rocket 900</h3><small>Debadge · 4K</small></div><span class="b">Livrée</span></div></div>
+    <div class="it"><div class="im"><img loading="lazy" src="https://i.postimg.cc/x8jZhvCS/7bc599-Lost-MC-Hoodie-1.webp" alt="Hoodie"></div><div class="t"><div><h3>Lost MC Hoodie</h3><small>Texture · 2048px</small></div><span class="b">Vêtement</span></div></div>
+    <div class="it"><div class="im"><img loading="lazy" src="https://i.postimg.cc/KvnMgGWB/hq720.png" alt="Dodge Charger"></div><div class="t"><div><h3>Dodge Charger</h3><small>Debadge · 2K</small></div><span class="b">Véhicule</span></div></div>
+    <!-- Ajoute tes images ici : <div class="im"><img src="images/x.jpg" alt=""></div> -->
+    <div class="it"><div class="im ph"></div><div class="t"><div><h3>Prop container</h3><small>Modélisation 3D</small></div><span class="b">3D</span></div></div>
   </div>
-</section>
+</div></section>
 
-<!-- PRICING -->
-<section id="pricing">
-  <div class="container">
-    <div class="pricing-header">
-      <div class="label reveal" style="justify-content: center;">Tarification</div>
-      <h2 class="reveal reveal-delay-1">Des offres adaptées à vos besoins</h2>
-      <p class="reveal reveal-delay-2">Qualité premium, délais respectés et support technique inclus.</p>
-    </div>
-
-    <div class="pricing-grid">
-      <div class="pricing-card reveal">
-        <div class="pricing-name">Basique</div>
-        <div class="pricing-price">5€ <span>/ asset</span></div>
-        <div class="pricing-sub">Idéal pour une modification simple</div>
-        <div class="pricing-divider"></div>
-        <ul class="pricing-features">
-          <li>1 modification de texture</li>
-          <li>Résolution jusqu'à 2K</li>
-          <li>Optimisation FiveM</li>
-          <li>1 révision incluse</li>
-          <li class="off">Pas de modélisation 3D</li>
-          <li class="off">Pas de support prioritaire</li>
-        </ul>
-        <a href="#contact" class="pricing-cta">Commander</a>
-      </div>
-
-      <div class="pricing-card featured-price reveal reveal-delay-1">
-        <div class="pricing-badge">Populaire</div>
-        <div class="pricing-name">Standard</div>
-        <div class="pricing-price">10€ <span>/ projet</span></div>
-        <div class="pricing-sub">Parfait pour une livrée complète</div>
-        <div class="pricing-divider"></div>
-        <ul class="pricing-features">
-          <li>Livrée véhicule sur-mesure</li>
-          <li>Résolution 4K ultra-détaillée</li>
-          <li>Fichiers .ytd optimisés</li>
-          <li>3 révisions incluses</li>
-          <li>Paramétrage handling de base</li>
-          <li class="off">Pas de modèle 3D complexe</li>
-        </ul>
-        <a href="#contact" class="pricing-cta">Commander</a>
-      </div>
-
-      <div class="pricing-card reveal reveal-delay-2">
-        <div class="pricing-name">Premium</div>
-        <div class="pricing-price">Sur Devis</div>
-        <div class="pricing-sub">Projets complexes & modélisation</div>
-        <div class="pricing-divider"></div>
-        <ul class="pricing-features">
-          <li>Modélisation 3D complète</li>
-          <li>Pack de textures complet</li>
-          <li>Handling réaliste avancé</li>
-          <li>Révisions illimitées</li>
-          <li>Support installation inclus</li>
-          <li>Livraison ultra-rapide</li>
-        </ul>
-        <a href="#contact" class="pricing-cta">Me contacter</a>
-      </div>
-    </div>
-    <p class="pricing-note reveal reveal-delay-3">Vous avez un besoin spécifique ? <a href="#contact">Demandez un devis personnalisé</a>.</p>
+<section id="tarifs"><div class="wrap">
+  <div class="k rv">// Tarifs</div><h2 class="rv">Simple & clair</h2>
+  <div class="pr rv">
+    <div class="pc"><h3>Basique</h3><b>5€<small> / asset</small></b><small style="color:var(--mut)">Modification simple</small><ul><li>1 modification de texture</li><li>Jusqu'à 2K</li><li>Optimisation FiveM</li><li>1 révision</li></ul><a class="btn o" href="#contact">Commander</a></div>
+    <div class="pc h"><h3>Standard <span class="tags" style="display:inline-flex;margin:0 0 0 6px"><i>Populaire</i></span></h3><b>10€<small> / projet</small></b><small style="color:var(--mut)">Livrée complète</small><ul><li>Livrée sur-mesure</li><li>4K ultra-détaillée</li><li>Fichiers .ytd optimisés</li><li>3 révisions</li></ul><a class="btn" href="#contact">Commander</a></div>
+    <div class="pc"><h3>Premium</h3><b>Devis</b><small style="color:var(--mut)">Projets complexes</small><ul><li>Modélisation 3D complète</li><li>Pack de textures</li><li>Révisions illimitées</li><li>Support installation</li></ul><a class="btn o" href="#contact">Me contacter</a></div>
   </div>
-</section>
+</div></section>
 
-<!-- CONTACT -->
-<section id="contact">
-  <div class="container">
-    <div class="contact-grid">
-      <div class="contact-info">
-        <div class="label reveal">Contact</div>
-        <h2 class="reveal reveal-delay-1">Démarrons votre projet.</h2>
-        <p class="reveal reveal-delay-2">Une idée ? Un besoin technique ? Remplissez le formulaire ou contactez-moi directement via nos réseaux.</p>
-        
-        <div class="contact-details reveal reveal-delay-3">
-          <div class="contact-detail">
-            <div class="contact-detail-icon">✉</div>
-            <div>
-              <div class="contact-detail-label">Email</div>
-              <div class="contact-detail-value">texture.lab.studio.fivem@gmail.com</div>
-            </div>
-          </div>
-          <div class="contact-detail">
-            <div class="contact-detail-icon">💬</div>
-            <div>
-              <div class="contact-detail-label">Discord</div>
-              <div class="contact-detail-value">rtx_offi</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <form class="contact-form reveal" id="discordForm">
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Nom complet</label>
-            <input type="text" id="name" class="form-control" placeholder="John Doe" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Email</label>
-            <input type="email" id="email" class="form-control" placeholder="john@exemple.com" required>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Service souhaité</label>
-            <select id="service" class="form-control">
-              <option>Modification de textures</option>
-              <option>Livrée de véhicule</option>
-              <option>Handling</option>
-              <option>Modélisation 3D</option>
-              <option>Autre</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Budget estimé</label>
-            <input type="text" id="budget" class="form-control" placeholder="ex: 50€">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Détails du projet</label>
-          <textarea id="message" class="form-control" placeholder="Décrivez votre besoin précisément..." required></textarea>
-        </div>
-        <button type="submit" class="form-submit" id="submitBtn">Envoyer la demande</button>
-        <div class="form-success" id="successMessage">Votre demande a été envoyée avec succès sur notre Discord !</div>
-      </form>
-    </div>
+<section id="contact"><div class="wrap">
+  <div class="k rv">// Contact</div><h2 class="rv">Lance ton projet</h2>
+  <div class="ct rv">
+    <div class="box"><p><b>Email</b>texture.lab.studio.fivem@gmail.com</p><p><b>Discord</b>rtx_offi</p><a class="btn dc" style="margin-top:14px" href="https://discord.gg/V35rU9s7g4" target="_blank" rel="noopener"><svg><use href="#dc"/></svg>Rejoindre le serveur</a></div>
+    <form class="box" id="cf">
+      <input name="nom" placeholder="Pseudo / Nom" required>
+      <input name="mail" type="email" placeholder="Email" required>
+      <select name="srv"><option>Textures véhicule</option><option>Vêtements</option><option>Debadge / logos 3D</option><option>Livrée personnalisée</option><option>Handling</option><option>Modélisation 3D</option><option>Autre</option></select>
+      <textarea name="msg" rows="4" placeholder="Décris ton projet…" required></textarea>
+      <button class="btn" type="submit">Envoyer la demande</button>
+    </form>
   </div>
-</section>
+</div></section>
+</main>
 
-<!-- FOOTER -->
-<footer>
-  <a href="#hero" class="footer-logo">Texture<span>Lab</span></a>
-  <div class="footer-copy">© 2026 Texture Lab. Tous droits réservés.</div>
-  <div class="footer-links">
-    <a href="https://discord.gg/V35rU9s7g4" target="_blank">Discord</a>
-    <a href="#">Behance</a>
-    <a href="#">Instagram</a>
-  </div>
-</footer>
+<footer><div class="wrap"><a href="https://discord.gg/V35rU9s7g4">Discord</a><a href="#">Behance</a><a href="#">Instagram</a><p style="margin-top:12px">© 2026 Texture Lab Studio — Non affilié à Rockstar Games ni Cfx.re</p></div></footer>
+
+<div id="welcome"><div class="box">
+  <img id="wav" alt=""><h3 id="wt" style="font-size:1.5rem"></h3>
+  <p id="wp">Connexion réussie. Rejoins le serveur Discord pour suivre tes commandes.</p>
+  <div class="cta"><a class="btn dc" id="wj" href="https://discord.gg/V35rU9s7g4" target="_blank" rel="noopener"><svg><use href="#dc"/></svg>Rejoindre le Discord</a><button class="btn o" id="wc">Plus tard</button></div>
+</div></div>
 
 <script>
-  // Navbar scroll effect
-  const navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-      navbar.classList.add('scrolled');
-    } else {
-      navbar.classList.remove('scrolled');
-    }
-  });
+/* ====== CONFIG DISCORD ====== */
+const CLIENT_ID = "";   // ← ID de ton application (discord.com/developers)
+const GUILD_ID  = "";   // ← ID de ton serveur (optionnel : permet de savoir si la personne est déjà membre)
+const INVITE    = "https://discord.gg/V35rU9s7g4";
+/* ============================ */
+const $=id=>document.getElementById(id);
+const key="tls_user";
+const redirect=location.origin+location.pathname;
 
-  // Custom cursor
-  const cursor = document.getElementById('cursor');
-  document.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-  });
+function show(u){
+  $("login").classList.add("hide");$("user").classList.remove("hide");
+  $("av").src=u.avatar;$("un").textContent=u.name;
+  $("joinlink").classList.toggle("hide",!!u.member);
+}
+function saved(){try{return JSON.parse(localStorage.getItem(key))}catch(e){return null}}
+$("login").onclick=()=>{
+  if(!CLIENT_ID){alert("Configure CLIENT_ID dans index.html (voir le début du script).");return}
+  location.href="https://discord.com/api/oauth2/authorize?client_id="+CLIENT_ID+"&redirect_uri="+encodeURIComponent(redirect)+"&response_type=token&scope=identify%20guilds";
+};
+$("chip").onclick=e=>{e.stopPropagation();$("menu").classList.toggle("on")};
+document.addEventListener("click",()=>$("menu").classList.remove("on"));
+$("logout").onclick=()=>{try{localStorage.removeItem(key)}catch(e){}location.reload()};
+$("wc").onclick=()=>$("welcome").classList.remove("on");
 
-  // Cursor expansion on interactive elements
-  const interactives = document.querySelectorAll('a, button, .portfolio-item, select, input, textarea');
-  interactives.forEach(el => {
-    el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
-    el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
-  });
+async function init(){
+  const h=new URLSearchParams(location.hash.slice(1)),t=h.get("access_token");
+  if(t){
+    history.replaceState(null,"",redirect);
+    try{
+      const H={headers:{Authorization:"Bearer "+t}};
+      const me=await (await fetch("https://discord.com/api/users/@me",H)).json();
+      let member=false;
+      if(GUILD_ID){try{const g=await (await fetch("https://discord.com/api/users/@me/guilds",H)).json();member=g.some(x=>x.id===GUILD_ID)}catch(e){}}
+      const u={id:me.id,name:me.global_name||me.username,member,
+        avatar:me.avatar?`https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=128`:`https://cdn.discordapp.com/embed/avatars/${(Number(BigInt(me.id)>>22n)%6)}.png`};
+      try{localStorage.setItem(key,JSON.stringify(u))}catch(e){}
+      show(u);
+      $("wav").src=u.avatar;$("wt").textContent="Bienvenue, "+u.name+" !";
+      if(member){$("wp").textContent="Tu es déjà dans le serveur Discord. Prêt à passer commande ?";$("wj").classList.add("hide")}
+      $("welcome").classList.add("on");
+      if(!member)$("wj").onclick=()=>{};
+    }catch(e){console.error(e)}
+  }else{const u=saved();if(u)show(u)}
+}
+init();
 
-  // Portfolio filter
-  function filterPortfolio(btn, category) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    
-    document.querySelectorAll('.portfolio-item').forEach(item => {
-      if (category === 'all' || item.getAttribute('data-cat') === category) {
-        item.style.display = 'block';
-      } else {
-        item.style.display = 'none';
-      }
-    });
-  }
+/* contact */
+$("cf").onsubmit=e=>{e.preventDefault();const d=new FormData(e.target),u=saved();
+  const b=`Nom : ${d.get("nom")}\nEmail : ${d.get("mail")}\nDiscord : ${u?u.name:"non connecté"}\nService : ${d.get("srv")}\n\n${d.get("msg")}`;
+  location.href="mailto:texture.lab.studio.fivem@gmail.com?subject="+encodeURIComponent("Demande — "+d.get("srv"))+"&body="+encodeURIComponent(b)};
 
-  // Scroll reveals
-  const revealElements = document.querySelectorAll('.reveal');
-  const revealOnScroll = () => {
-    revealElements.forEach(el => {
-      const top = el.getBoundingClientRect().top;
-      if (top < window.innerHeight - 100) {
-        el.classList.add('visible');
-      }
-    });
-  };
-  window.addEventListener('scroll', revealOnScroll);
-  window.addEventListener('load', revealOnScroll);
-
-  // ─── DISCORD WEBHOOK LOGIC ───
-  document.getElementById('discordForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const btn = document.getElementById('submitBtn');
-    const successMsg = document.getElementById('successMessage');
-    const webhookURL = "https://discord.com/api/webhooks/1504070037068316703/n19bWRwz1_TSDpAlhdqxnSekqhExuR12CLE1mHOnouKgRezHm0cBtyJcTtoOMbRWLpYx";
-
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const service = document.getElementById('service').value;
-    const budget = document.getElementById('budget').value;
-    const message = document.getElementById('message').value;
-
-    btn.innerText = "Envoi en cours...";
-    btn.style.opacity = "0.5";
-    btn.disabled = true;
-
-    const data = {
-      embeds: [{
-        title: "💼 Nouvelle Demande de Projet",
-        color: 13150574,
-        fields: [
-          { name: "👤 Client", value: name, inline: true },
-          { name: "📧 Email", value: email, inline: true },
-          { name: "🛠 Service", value: service, inline: true },
-          { name: "💰 Budget", value: budget || "Non spécisé", inline: true },
-          { name: "📝 Détails", value: message }
-        ],
-        footer: { text: "Texture Lab Website" },
-        timestamp: new Date()
-      }]
-    };
-
-    fetch(webhookURL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    })
-    .then(response => {
-      if (response.ok) {
-        successMsg.style.display = 'block';
-        document.getElementById('discordForm').reset();
-        btn.innerText = "Envoyé !";
-      } else {
-        alert("Erreur lors de l'envoi.");
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.innerText = "Réessayer";
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      btn.disabled = false;
-      btn.style.opacity = "1";
-    });
-  });
+/* marquee + effets */
+const w=["Textures véhicules","Vêtements","Debadge 3D","Livrées custom","FiveM ready","4K"];
+$("mq").innerHTML=(w.map(x=>`<span>${x} ✦</span>`).join("")).repeat(4);
+addEventListener("pointermove",e=>{$("glow").style.left=e.clientX+"px";$("glow").style.top=e.clientY+"px"});
+const io=new IntersectionObserver(a=>a.forEach(x=>x.isIntersecting&&x.target.classList.add("on")),{threshold:.12});
+document.querySelectorAll(".rv").forEach(x=>io.observe(x));
 </script>
-
 </body>
 </html>
